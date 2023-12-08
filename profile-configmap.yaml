@@ -1,0 +1,22 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dbt-profile
+  namespace: default
+data:
+  dbt-profile: |
+    trino:
+      target: dev
+      outputs:
+        dev:
+          type: trino
+          user: trino
+          host: trino
+          database: minio
+          schema: curated
+          port: 8080
+          threads: 1
+
+
+
+

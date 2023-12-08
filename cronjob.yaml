@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dbt-cronjob
+spec:
+  schedule: '*/2 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: dbt-trino
+              image: 'nischal2015/dbt-essentials:3.11.7-alpine3.18'
+              imagePullPolicy: IfNotPresent
+              command: ['sh', '-c']
+              args:
+                - 'dbt debug && dbt run --profiles-dir .'
+              volumeMounts:
+                - name: dbt-profile
+                  mountPath: /app/profiles.yml
+                  subPath: profiles.yml
+                  readOnly: true
+          volumes:
+            - name: dbt-profile
+              configMap:
+                name: dbt-profile
+                items:
+                  - key: dbt-profile
+                    path: profiles.yml
+          restartPolicy: OnFailure # Restart the job if it fails
